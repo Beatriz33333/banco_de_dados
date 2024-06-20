@@ -1,0 +1,178 @@
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema contratodigital
+-- -----------------------------------------------------
+DROP SCHEMA IF EXISTS `contratodigital` ;
+
+-- -----------------------------------------------------
+-- Schema contratodigital
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `contratodigital` DEFAULT CHARACTER SET utf8 ;
+
+-- -----------------------------------------------------
+-- Table `contratodigital`.`fiador`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `contratodigital`.`fiador` ;
+
+CREATE TABLE IF NOT EXISTS `contratodigital`.`fiador` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `cpf` VARCHAR(20) NOT NULL,
+  `telefone` VARCHAR(20) NOT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `nome` VARCHAR(45) NOT NULL,
+  `data_nasc` DATE NOT NULL,
+  `genero` VARCHAR(20) NOT NULL,
+  `rg` VARCHAR(20) NOT NULL,
+  `cep` VARCHAR(20) NOT NULL,
+  `endereco` VARCHAR(50) NOT NULL,
+  `numero_endereco` INT NOT NULL,
+  `complemento` VARCHAR(20) NULL,
+  `bairro` VARCHAR(30) NOT NULL,
+  `cidade` VARCHAR(30) NOT NULL,
+  `estado` VARCHAR(20) NOT NULL,
+  `observacoes` VARCHAR(500) NOT NULL,
+  `nacionalidade` VARCHAR(20) NOT NULL,
+  `estado_civil` VARCHAR(20) NOT NULL,
+  `ocupacao_profissional` VARCHAR(35) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `contratodigital`.`locador`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `contratodigital`.`locador` ;
+
+CREATE TABLE IF NOT EXISTS `contratodigital`.`locador` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `cpf` VARCHAR(20) NOT NULL,
+  `telefone` VARCHAR(20) NOT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `nome` VARCHAR(45) NOT NULL,
+  `genero` VARCHAR(10) NULL DEFAULT NULL,
+  `senha` VARCHAR(45) NOT NULL,
+  `banco` VARCHAR(45) NULL,
+  `tipo_conta` VARCHAR(45) NULL,
+  `agencia` VARCHAR(45) NULL,
+  `numero_conta` VARCHAR(45) NULL,
+  `titular_conta` VARCHAR(45) NULL,
+  `pix` VARCHAR(45) NULL,
+  `ativo` BOOLEAN DEFAULT TRUE,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `contratodigital`.`imovel`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `contratodigital`.`imovel` ;
+
+CREATE TABLE IF NOT EXISTS `contratodigital`.`imovel` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `cep` VARCHAR(20) NOT NULL,
+  `endereco` VARCHAR(100) NOT NULL,
+  `numero_endereco` INT NOT NULL,
+  `complemento` VARCHAR(20) NULL DEFAULT NULL,
+  `bairro` VARCHAR(30) NOT NULL,
+  `cidade` VARCHAR(30) NOT NULL,
+  `estado` VARCHAR(20) NOT NULL,
+  `observacoes` VARCHAR(500) NULL,
+  `locador_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_imovel_locador` (`locador_id` ASC) VISIBLE,
+  CONSTRAINT `fk_imovel_locador`
+    FOREIGN KEY (`locador_id`)
+    REFERENCES `contratodigital`.`locador` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `contratodigital`.`locatario`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `contratodigital`.`locatario` ;
+
+CREATE TABLE IF NOT EXISTS `contratodigital`.`locatario` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `cpf` VARCHAR(20) NOT NULL,
+  `telefone` VARCHAR(20) NOT NULL,
+  `nome` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(45) NULL,
+  `genero` VARCHAR(20) NULL DEFAULT NULL,
+  `data_nasc` DATE NOT NULL,
+  `rg` VARCHAR(20) NOT NULL,
+  `cep` VARCHAR(20) NOT NULL,
+  `endereco` VARCHAR(50) NOT NULL,
+  `numero_endereco` INT NOT NULL,
+  `complemento` VARCHAR(20) NOT NULL,
+  `bairro` VARCHAR(30) NOT NULL,
+  `cidade` VARCHAR(30) NOT NULL,
+  `estado` VARCHAR(20) NOT NULL,
+  `observacoes` VARCHAR(500) NULL,
+  `nacionalidade` VARCHAR(20) NOT NULL,
+  `estado_civil` VARCHAR(20) NOT NULL,
+  `ocupacao_profissional` VARCHAR(35) NULL,
+  `ativo` BOOLEAN DEFAULT TRUE,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `contratodigital`.`contrato`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `contratodigital`.`locatario_contrato`;
+DROP TABLE IF EXISTS `contratodigital`.`contrato`;
+CREATE TABLE IF NOT EXISTS `contratodigital`.`contrato` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `mensalidade` DECIMAL(10,2) NOT NULL,
+  `multa_atraso` DECIMAL(5,2) NOT NULL,
+  `juros` DECIMAL(5,2) NOT NULL,
+  `data_inicio` DATE NOT NULL,
+  `data_minima` DATE NOT NULL,
+  `data_fim` DATE NOT NULL,
+  `garantia` VARCHAR(20) NOT NULL,
+  `garantia_valor` DECIMAL(10,2) NULL,
+  `garantia_descricao` VARCHAR(100) NULL,
+  `locador_id` INT NOT NULL,
+  `imovel_id` INT NOT NULL,
+  `fiador_id` INT NULL DEFAULT NULL,
+  `ativo` BOOLEAN DEFAULT TRUE,
+  PRIMARY KEY (`id`),
+  INDEX `fk_contrato_locador` (`locador_id` ASC) VISIBLE,
+  INDEX `fk_contrato_imovel` (`imovel_id` ASC) VISIBLE,
+  INDEX `fk_contrato_fiador` (`fiador_id` ASC) VISIBLE,
+  CONSTRAINT `fk_contrato_fiador`
+    FOREIGN KEY (`fiador_id`)
+    REFERENCES `contratodigital`.`fiador` (`id`)
+    ON DELETE CASCADE,
+  CONSTRAINT `fk_contrato_imovel`
+    FOREIGN KEY (`imovel_id`)
+    REFERENCES `contratodigital`.`imovel` (`id`)
+    ON DELETE CASCADE,
+  CONSTRAINT `fk_contrato_locador`
+    FOREIGN KEY (`locador_id`)
+    REFERENCES `contratodigital`.`locador` (`id`)
+    ON DELETE CASCADE
+    )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+CREATE TABLE IF NOT EXISTS `contratodigital`.`locatario_contrato` (
+  `locatario_id` INT NOT NULL,
+  `contrato_id` INT NOT NULL,
+  PRIMARY KEY (`locatario_id`, `contrato_id`),
+  CONSTRAINT `fk_locatario_contrato_locatario`
+    FOREIGN KEY (`locatario_id`)
+    REFERENCES `contratodigital`.`locatario` (`id`)
+    ON DELETE CASCADE,
+  CONSTRAINT `fk_locatario_contrato_contrato`
+    FOREIGN KEY (`contrato_id`)
+    REFERENCES `contratodigital`.`contrato` (`id`)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
