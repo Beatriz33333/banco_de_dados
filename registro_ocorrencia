@@ -1,0 +1,194 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+DROP SCHEMA IF EXISTS `mydb` ;
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
+USE `mydb` ;
+
+-- -----------------------------------------------------
+-- Table `mydb`.`tb_pessoa`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`tb_pessoa` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`tb_pessoa` (
+  `cpf_pessoa` VARCHAR(14) NOT NULL,
+  `nome_pessoa` VARCHAR(100) NOT NULL,
+  `email_pessoa` VARCHAR(50) NOT NULL,
+  `data_pessoa` VARCHAR(10) NOT NULL,
+  `endereco_pessoa` VARCHAR(150) NOT NULL,
+  `senha_pessoa` VARCHAR(20) NOT NULL,
+  `sexo_pessoa` VARCHAR(10) NULL DEFAULT NULL,
+  PRIMARY KEY (`cpf_pessoa`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`tb_tipo`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`tb_tipo` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`tb_tipo` (
+  `id_tipo` INT NOT NULL AUTO_INCREMENT,
+  `nome_tipo` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id_tipo`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`tb_departamento`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`tb_departamento` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`tb_departamento` (
+  `id_departamento` INT NOT NULL AUTO_INCREMENT,
+  `nome_departamento` VARCHAR(50) NOT NULL,
+  PRIMARY KEY (`id_departamento`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 28
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`tb_ocorrencia`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`tb_ocorrencia` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`tb_ocorrencia` (
+  `id_ocorrencia` INT NOT NULL,
+  `descricao` VARCHAR(100) NULL DEFAULT NULL,
+  `data_ocorrencia` DATE NOT NULL,
+  `tb_pessoa_cpf_pessoa` VARCHAR(14) NOT NULL,
+  `fk_tipo` INT NOT NULL,
+  `fk_departamento` INT NOT NULL,
+  PRIMARY KEY (`id_ocorrencia`),
+  INDEX `fk_tb_ocorrencia_tb_pessoa_idx` (`tb_pessoa_cpf_pessoa` ASC) VISIBLE,
+  INDEX `fk_tb_ocorrencia_tb_tipo1_idx` (`fk_tipo` ASC) VISIBLE,
+  INDEX `fk_tb_ocorrencia_tb_departamento1_idx` (`fk_departamento` ASC) VISIBLE,
+  CONSTRAINT `fk_tb_ocorrencia_tb_pessoa`
+    FOREIGN KEY (`tb_pessoa_cpf_pessoa`)
+    REFERENCES `mydb`.`tb_pessoa` (`cpf_pessoa`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tb_ocorrencia_tb_tipo1`
+    FOREIGN KEY (`fk_tipo`)
+    REFERENCES `mydb`.`tb_tipo` (`id_tipo`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tb_ocorrencia_tb_departamento1`
+    FOREIGN KEY (`fk_departamento`)
+    REFERENCES `mydb`.`tb_departamento` (`id_departamento`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`tb_anexo`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`tb_anexo` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`tb_anexo` (
+  `id_anexo` INT NOT NULL,
+  `arquivos` BLOB NULL DEFAULT NULL,
+  `fk_ocorrencia` INT NOT NULL,
+  PRIMARY KEY (`id_anexo`),
+  INDEX `fk_tb_anexo_tb_ocorrencia1_idx1` (`fk_ocorrencia` ASC) VISIBLE,
+  CONSTRAINT `fk_tb_anexo_tb_ocorrencia1`
+    FOREIGN KEY (`fk_ocorrencia`)
+    REFERENCES `mydb`.`tb_ocorrencia` (`id_ocorrencia`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`tb_veiculo`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`tb_veiculo` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`tb_veiculo` (
+  `placa` VARCHAR(8) NOT NULL,
+  `proprietario` VARCHAR(45) NOT NULL,
+  `modelo` VARCHAR(45) NOT NULL,
+  `fk_ocorrencia` INT NOT NULL,
+  PRIMARY KEY (`placa`),
+  INDEX `fk_tb_veiculo_tb_ocorrencia1_idx` (`fk_ocorrencia` ASC) VISIBLE,
+  CONSTRAINT `fk_tb_veiculo_tb_ocorrencia1`
+    FOREIGN KEY (`fk_ocorrencia`)
+    REFERENCES `mydb`.`tb_ocorrencia` (`id_ocorrencia`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- -----------------------------------------------------
+-- Data for table `mydb`.`tb_tipo`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `mydb`;
+INSERT INTO `mydb`.`tb_tipo` (`id_tipo`, `nome_tipo`) VALUES (1, 'Lixo');
+INSERT INTO `mydb`.`tb_tipo` (`id_tipo`, `nome_tipo`) VALUES (2, 'Buraco na pista');
+INSERT INTO `mydb`.`tb_tipo` (`id_tipo`, `nome_tipo`) VALUES (3, 'Bueiro sem proteção');
+INSERT INTO `mydb`.`tb_tipo` (`id_tipo`, `nome_tipo`) VALUES (4, 'Placa danificada');
+INSERT INTO `mydb`.`tb_tipo` (`id_tipo`, `nome_tipo`) VALUES (5, 'Banco danificado');
+INSERT INTO `mydb`.`tb_tipo` (`id_tipo`, `nome_tipo`) VALUES (6, 'Calçada danificada');
+INSERT INTO `mydb`.`tb_tipo` (`id_tipo`, `nome_tipo`) VALUES (7, 'Carro sem placa');
+INSERT INTO `mydb`.`tb_tipo` (`id_tipo`, `nome_tipo`) VALUES (8, 'Carro parado em lugar irregular');
+
+COMMIT;
+
+
+-- -----------------------------------------------------
+-- Data for table `mydb`.`tb_departamento`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `mydb`;
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (1, 'Acre');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (2, 'Alagoas');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (3, 'Amapá');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (4, 'Amazonas');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (5, 'Bahia');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (6, 'Ceará');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (7, 'Espírito Santo');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (8, 'Goiás');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (9, 'Maranhão');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (10, 'Mato Grosso');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (11, 'Mato Grosso do Sul');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (12, 'Minas Gerais');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (13, 'Pará');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (14, 'Paraíba');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (15, 'Paraná');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (16, 'Pernambuco');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (17, 'Piauí');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (18, 'Rio de Janeiro');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (19, 'Rio Grande do Norte');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (20, 'Rio Grande do Sul');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (21, 'Rondônia');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (22, 'Roraima');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (23, 'Santa Catarina');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (24, 'São Paulo');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (25, 'Sergipe ');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (26, 'Tocantins ');
+INSERT INTO `mydb`.`tb_departamento` (`id_departamento`, `nome_departamento`) VALUES (27, 'Distrito Federal');
+
+COMMIT;
+
+
+INSERT INTO `mydb`.`tb_tipo` (`id_tipo`, `nome_tipo`, `fk_ocorrencia`) VALUES (9, 'Raíz de árvore na pista', DEFAULT);
